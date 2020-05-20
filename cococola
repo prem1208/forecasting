@@ -1,0 +1,88 @@
+install.packages("forecast")
+install.packages("fpp")
+install.packages("smooth")
+install.packages("readxl")
+library(forecast)
+library(fpp)
+library(smooth)
+library(readxl)
+
+coca<- CocaCola_Sales_Rawdata
+
+library(tseries)
+install.packages("tseries")
+am<-ts(coca$Sales, frequency = 4, start = c(86))
+View(am)
+
+train<- am[1:38]
+test<- am[39:42]
+
+train<-ts(train, frequency = 4)
+View(train)
+test<- ts(test, frequency = 4)
+plot(am)
+
+ma_model1<- sma(train)
+ma_pred<- data.frame(predict(ma_model1, h=4))
+ma_pred
+
+plot(forecast(ma_model1))
+ma_mape<- MAPE(ma_pred$Point.Forecast,test)*100
+ma_mape
+# 8.90868
+
+ses1<- ses(train, alpha = 0.20)
+ses1
+
+ses1_pred<- data.frame(predict(ses1, h=4))
+plot(forecast(ses1,n.ahead=4))
+ses1_mape<- MAPE(ses1_pred$Point.Forecast,test)*100
+ses1_mape
+
+#16.1243
+
+holt_am<- holt(train, alpha=0.2, beta = 0.15)
+holt_am
+plot(forecast(holt_am, h=4))
+holtam_pred<- data.frame(predict(holt_am, h=4))
+holtam_pred
+holtam_mape<-MAPE(holtam_pred$Point.Forecast,test)*100
+holtam_mape
+
+#8.267703
+
+hw_am<- hw(train, alpha = 0.2, beta = 0.15, gamma = 0.05)
+hw_am
+hw_am_pred<- data.frame(predict(hw_am, h=4))
+hw_am_pred
+plot(forecast(hw_am,h=4))
+hw_am_mape<- MAPE(hw_am_pred$Point.Forecast,test)*100
+hw_am_mape
+#6.149798
+
+ses_na<- ses(train, alpha = NULL)
+summary(ses_na)
+sesna_pred<- data.frame(predict(ses_na, h=4))
+sesna_pred
+plot(forecast(ses_na, h=4))
+sesna_mape<- MAPE(sesna_pred$Point.Forecast,test)*100
+ses1_mape
+#16.1243
+
+holt_amb<- holt(train, alpha=NULL, beta = NULL)
+holt_amb
+plot(forecast(holt_amb, h=4))
+holtamb_pred<- data.frame(predict(holt_amb, h=4))
+holtamb_pred
+holtamb_mape<-MAPE(holtamb_pred$Point.Forecast,test)*100
+holtamb_mape
+#8.927388
+
+hw_amb<- hw(train, alpha = NULL, beta = NULL, gamma = NULL)
+hw_amb
+hw_amb_pred<- data.frame(predict(hw_amb, h=4))
+hw_amb_pred
+plot(forecast(hw_amb_pred, h =4))
+hw_amb_mape<- MAPE(hw_amb_pred$Point.Forecast,test)*100
+hw_am_mape
+#6.149798
